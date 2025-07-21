@@ -1,0 +1,10 @@
+### POST request to example server
+PUT localhost:4000/patients/update/223e4567-e89b-12d3-a456-426614174005
+Content-Type: application/json
+
+{
+"name" : "Bilal Ahmad Butt 3",
+"email" : "bilal_update@email.com",
+"address" : "Burger strasse 123b",
+"dateOfBirth" : "1990-01-12"
+}

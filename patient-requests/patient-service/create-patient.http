@@ -1,0 +1,13 @@
+### POST request
+POST http://localhost:4000/patients/save
+Content-Type: application/json
+
+{
+"name" : "Bilal Ahmad Butt",
+"email" : "bilal@email.com",
+"address" : "Burger strasse 123b",
+"dateOfBirth" : "1990-01-12",
+"registeredDate":"2024-11-28"
+}
+
+###

@@ -1,0 +1,59 @@
+
+
+services:
+  postgres:
+
+    image: postgres:9.3
+    container_name: patient-service-db
+    restart: always
+
+    #    Environment variables
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - patient-service-data:/var/lib/postgresql/data
+
+    ports:
+      #      - host port (my laptop) : container port
+      - "5000:5432"
+
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  patient-service:
+    #    image: reservation-system:v2.0  # Use pre-built image, comment out build command if you want to use this line
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: patient-service
+    restart: always
+    ports:
+      - "4000:4000" # host:docker_container -> map docker_container port to localhost port
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/db
+      SPRING_DATASOURCE_USERNAME: admin_user;
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update;
+      SPRING_SQL_INIT_MODE: always
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQL81Dialect
+      SERVER_PORT: 4000 # Must match EXPOSE (in dockerfile) and application.properties
+    networks:
+      - internal
+
+volumes:
+  patient-service-data:
+
+networks:
+  internal:
+    driver: bridge
