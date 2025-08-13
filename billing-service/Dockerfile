@@ -30,6 +30,7 @@ COPY --from=builder ./app/target/billing-service.jar ./app.jar
 
 # We set 4000 in our application.properties
 
+# Expose application and gRPC ports
 # PORT for application to run
 EXPOSE 4001
 # Expose GRPC server

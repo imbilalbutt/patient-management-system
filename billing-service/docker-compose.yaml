@@ -1,73 +1,107 @@
 
-
 services:
-  #   Should match with ==> depends on ,  jdbc url jdbc:postgresql://billing-db-service ---> but while connecting in
-  #  intellIJ jdbc:postgresql://localhost:5000/db (local host to check: docker ps -a)
-  #  This will be ("billing-db-service") will be container name
-
-
-#    Uncomment (don't need to do)
-#  billing-db-service:
-#
-#    image: postgres:9.3
-#    container_name: billing-service-db
-#    restart: always
-#
-#    #    Environment variables
-#    environment:
-#      POSTGRES_DB: db
-#      POSTGRES_USER: admin_user
-#      POSTGRES_PASSWORD: password
-#    volumes:
-#      - billing-service-data:/var/lib/postgresql/data
-#
-#    ports:
-#      #      - host port (my laptop) : container port
-#      - "5000:5432"
-#
-#    networks:
-#      - internal
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
-
-  # This will be ("billing-service") will be container name
-  billing-service:
+  # "billing-service_app" will be container name (from line 4, line 10)
+  app:
     #    image:  # Use pre-built image, comment out build command if you want to use this line
     build:
       context: .
       dockerfile: Dockerfile
+
     container_name: billing-service
     restart: always
     ports:
       - "4001:4001" # host (my laptop) : docker_container -> map docker_container port to localhost port
       - "9001:9001"
 
-#    Uncomment (don't need to do)
-#    depends_on:
-#      billing-db-service:
-#        condition: service_healthy
-
-
     environment:
-      #    Uncomment (don't need to do)
-#      #      billing-service-db ==> container _ name
-#      #      billing-db-service ==> service _ name (++++) service will be used in jdbc url making.
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://billing-db-service:5432/db
-#      SPRING_DATASOURCE_USERNAME: admin_user
-#      SPRING_DATASOURCE_PASSWORD: password
-#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#      SPRING_SQL_INIT_MODE: always
       SERVER_PORT: 4001 # Must match EXPOSE (in dockerfile) and application.properties
       GRPC_SERVER_PORT: 9001
     networks:
       - internal
 
-#volumes:
-#  billing-service-data:
+#networks:
+#  internal:
+#    driver: bridge
 
 networks:
   internal:
-    driver: bridge
+    external: true
+    name: shared-internal
+
+
+
+
+
+
+
+#services:
+#  #   Should match with ==> depends on ,  jdbc url jdbc:postgresql://billing-db-service ---> but while connecting in
+#  #  intellIJ jdbc:postgresql://localhost:5000/db (local host to check: docker ps -a)
+#  #  This will be ("billing-db-service") will be container name
+#
+#
+##    Uncomment (don't need to do)
+##  billing-db-service:
+##
+##    image: postgres:9.3
+##    container_name: billing-service-db
+##    restart: always
+##
+##    #    Environment variables
+##    environment:
+##      POSTGRES_DB: db
+##      POSTGRES_USER: admin_user
+##      POSTGRES_PASSWORD: password
+##    volumes:
+##      - billing-service-data:/var/lib/postgresql/data
+##
+##    ports:
+##      #      - host port (my laptop) : container port
+##      - "5000:5432"
+##
+##    networks:
+##      - internal
+##    healthcheck:
+##      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+##      interval: 5s
+##      timeout: 5s
+##      retries: 5
+#
+#  # This will be ("billing-service") will be container name
+#  app:
+#    #    image:  # Use pre-built image, comment out build command if you want to use this line
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: billing-service
+#    restart: always
+#    ports:
+#      - "4001:4001" # host (my laptop) : docker_container -> map docker_container port to localhost port
+#      - "9001:9001"
+#
+##    Uncomment (don't need to do)
+##    depends_on:
+##      billing-db-service:
+##        condition: service_healthy
+#
+#
+#    environment:
+#      #    Uncomment (don't need to do)
+##      #      billing-service-db ==> container _ name
+##      #      billing-db-service ==> service _ name (++++) service will be used in jdbc url making.
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://billing-db-service:5432/db
+##      SPRING_DATASOURCE_USERNAME: admin_user
+##      SPRING_DATASOURCE_PASSWORD: password
+##      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+##      SPRING_SQL_INIT_MODE: always
+#      SERVER_PORT: 4001 # Must match EXPOSE (in dockerfile) and application.properties
+#      GRPC_SERVER_PORT: 9001
+#    networks:
+#      - internal
+#
+##volumes:
+##  billing-service-data:
+#
+#networks:
+#  internal:
+#    driver: bridge

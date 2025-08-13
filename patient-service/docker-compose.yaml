@@ -1,13 +1,12 @@
 
 
 services:
-#   Should match with ==> depends on ,  jdbc url jdbc:postgresql://patient-db-service ---> but while connecting in
-#  intellIJ jdbc:postgresql://localhost:5000/db (local host to check: docker ps -a)
-#  This will be ("patient-db-service") will be container name
-  patient-db-service:
-
+  #   Should match with ==> depends on ,  jdbc url jdbc:postgresql://db ---> but while connecting in
+  #  intellIJ jdbc:postgresql://localhost:5000/db (local host to check: docker ps -a)
+  #  This will be ("db") will be container name
+  db:
     image: postgres:9.3
-    container_name: patient-service-db
+    container_name: db-service
     restart: always
 
     #    Environment variables
@@ -30,35 +29,201 @@ services:
       timeout: 5s
       retries: 5
 
-# This will be ("patient-service") will be container name
-  patient-service:
+  # This will be ("patient-service_app") will be container name
+  app:
     #    image:  # Use pre-built image, comment out build command if you want to use this line
     build:
-        context: .
-        dockerfile: Dockerfile
-    container_name: patient-service
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
     restart: always
     ports:
       - "4000:4000" # host:docker_container -> map docker_container port to localhost port
 
     depends_on:
-      patient-db-service:
+      db:
         condition: service_healthy
     environment:
-#      patient-service-db ==> container _ name
-#      patient-db-service ==> service _ name (++++) service will be used in jdbc url making.
-      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-db-service:5432/db
+      #      db ---> is actually container name
+      #      db ==> container _ name
+      #      db ==> service _ name (++++) service will be used in jdbc url making.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
       SPRING_DATASOURCE_USERNAME: admin_user
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: always
       SERVER_PORT: 4000 # Must match EXPOSE (in dockerfile) and application.properties
+
+      #      billing-service ---> is container name and shares same network 'internal'
+      #      Docker will automatically resolve DNS configuration and connect to
+      #      billing-service container
+#      BILLING_SERVICE_ADDRESS: billing-service
+      BILLING_SERVICE_ADDRESS: app
+      BILLING_SERVICE_GRPC_PORT: 9001
     networks:
       - internal
 
 volumes:
   patient-service-data:
 
+#networks:
+#  internal:
+#    driver: bridge
+
 networks:
   internal:
-    driver: bridge
+#    driver: bridge
+#     external: true tells Docker: "Don’t create this network — use an existing one named shared-internal."
+    external: true
+    name: shared-internal
+
+
+
+
+
+
+
+## version 1.0 works perfect
+#services:
+#  #   Should match with ==> depends on ,  jdbc url jdbc:postgresql://patient-db-service ---> but while connecting in
+#  #  intellIJ jdbc:postgresql://localhost:5000/db (local host to check: docker ps -a)
+#  #  This will be ("patient-db-service") will be container name
+#  patient-db-service:
+#
+#    image: postgres:9.3
+#    container_name: patient-service-db
+#    restart: always
+#
+#    #    Environment variables
+#    environment:
+#      POSTGRES_DB: db
+#      POSTGRES_USER: admin_user
+#      POSTGRES_PASSWORD: password
+#    volumes:
+#      - patient-service-data:/var/lib/postgresql/data
+#
+#    ports:
+#      #      - host port (my laptop) : container port
+#      - "5000:5432"
+#
+#    networks:
+#      - internal
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
+#
+#  # This will be ("patient-service") will be container name
+#  patient-service:
+#    #    image:  # Use pre-built image, comment out build command if you want to use this line
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: patient-service
+#    restart: always
+#    ports:
+#      - "4000:4000" # host:docker_container -> map docker_container port to localhost port
+#
+#    depends_on:
+#      patient-db-service:
+#        condition: service_healthy
+#    environment:
+#      #      patient-db-service ---> is actually container name
+#      #      patient-service-db ==> container _ name
+#      #      patient-db-service ==> service _ name (++++) service will be used in jdbc url making.
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-db-service:5432/db
+#      SPRING_DATASOURCE_USERNAME: admin_user
+#      SPRING_DATASOURCE_PASSWORD: password
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_SQL_INIT_MODE: always
+#      SERVER_PORT: 4000 # Must match EXPOSE (in dockerfile) and application.properties
+#
+#      #      billing-service ---> is container name and shares same network 'internal'
+#      #      Docker will automatically resolve DNS configuration and connect to
+#      #      billing-service container
+#      BILLING_SERVICE_ADDRESS: billing-service_app_1
+#      BILLING_SERVICE_GRPC_PORT: 9001
+#    networks:
+#      - internal
+#
+#volumes:
+#  patient-service-data:
+#
+#networks:
+#  internal:
+#    driver: bridge
+#
+
+
+
+
+#services:
+##   Should match with ==> depends on ,  jdbc url jdbc:postgresql://patient-db-service ---> but while connecting in
+##  intellIJ jdbc:postgresql://localhost:5000/db (local host to check: docker ps -a)
+##  This will be ("patient-db-service") will be container name
+#  patient-db-service:
+#
+#    image: postgres:9.3
+#    container_name: patient-service-db
+#    restart: always
+#
+#    #    Environment variables
+#    environment:
+#      POSTGRES_DB: db
+#      POSTGRES_USER: admin_user
+#      POSTGRES_PASSWORD: password
+#    volumes:
+#      - patient-service-data:/var/lib/postgresql/data
+#
+#    ports:
+#      #      - host port (my laptop) : container port
+#      - "5000:5432"
+#
+#    networks:
+#      - internal
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
+#
+## This will be ("patient-service") will be container name
+#  patient-service:
+#    #    image:  # Use pre-built image, comment out build command if you want to use this line
+#    build:
+#        context: .
+#        dockerfile: Dockerfile
+#    container_name: patient-service
+#    restart: always
+#    ports:
+#      - "4000:4000" # host:docker_container -> map docker_container port to localhost port
+#
+#    depends_on:
+#      patient-db-service:
+#        condition: service_healthy
+#    environment:
+##      patient-db-service ---> is actually container name
+##      patient-service-db ==> container _ name
+##      patient-db-service ==> service _ name (++++) service will be used in jdbc url making.
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-db-service:5432/db
+#      SPRING_DATASOURCE_USERNAME: admin_user
+#      SPRING_DATASOURCE_PASSWORD: password
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_SQL_INIT_MODE: always
+#      SERVER_PORT: 4000 # Must match EXPOSE (in dockerfile) and application.properties
+#
+##      billing-service ---> is container name and shares same network 'internal'
+##      Docker will automatically resolve DNS configuration and connect to
+##      billing-service container
+#      BILLING_SERVICE_ADDRESS: billing-service_app
+#      BILLING_SERVICE_GRPC_PORT: 9001
+#    networks:
+#      - internal
+#
+#volumes:
+#  patient-service-data:
+#
+#networks:
+#  internal:
+#    driver: bridge

@@ -54,6 +54,13 @@ public class PatientService {
         Patient newPatient = patientRepository.save(
                 PatientMapper.toModel(requestDTO));
 
+
+//        After the patient is created, we create a billing account for them,
+//        which uses our GRPC client to call billing service and we get a response
+//        back that has a account id
+        billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
+                newPatient.getName(), newPatient.getEmail());
+
         return PatientMapper.toDTO(newPatient);
     }
 
