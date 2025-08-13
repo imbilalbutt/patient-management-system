@@ -4,6 +4,7 @@ import com.imbilalbutt.patientservice.dto.PatientRequestDTO;
 import com.imbilalbutt.patientservice.dto.PatientResponseDTO;
 import com.imbilalbutt.patientservice.exceptions.EmailAlreadyExistsExceptions;
 import com.imbilalbutt.patientservice.exceptions.PatientNotFoundException;
+import com.imbilalbutt.patientservice.grpc.BillingServiceGrpcClient;
 import com.imbilalbutt.patientservice.mapper.PatientMapper;
 import com.imbilalbutt.patientservice.model.Patient;
 import com.imbilalbutt.patientservice.repository.PatientRepository;
@@ -22,9 +23,15 @@ public class PatientService {
 //    the patientRepository itself by using new() keyword.
     private PatientRepository patientRepository;
 
-    public PatientService(PatientRepository patientRepository) {
+    //    use dependecny injection to inject billing service client
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
+
+    public PatientService(PatientRepository patientRepository,  BillingServiceGrpcClient billingServiceGrpcClient) {
         this.patientRepository = patientRepository;
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
     }
+
+
 
     public List<PatientResponseDTO> getPatients(){
         List<Patient> patients = patientRepository.findAll();
@@ -46,6 +53,13 @@ public class PatientService {
         }
         Patient newPatient = patientRepository.save(
                 PatientMapper.toModel(requestDTO));
+
+
+//        After the patient is created, we create a billing account for them,
+//        which uses our GRPC client to call billing service and we get a response
+//        back that has a account id
+        billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
+                newPatient.getName(), newPatient.getEmail());
 
         return PatientMapper.toDTO(newPatient);
     }

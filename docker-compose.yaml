@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Billing Service
+  billing-service:
+    build:
+      context: ./billing-service
+      dockerfile: Dockerfile
+    container_name: billing-service
+    restart: unless-stopped
+    ports:
+      - "4001:4001"  # HTTP
+      - "9001:9001"  # gRPC
+    environment:
+      SERVER_PORT: 4001
+      GRPC_SERVER_PORT: 9001
+    networks:
+      - internal
+
+  # Patient Service Database
+  patient-db-service:
+    image: postgres:13-alpine
+    container_name: patient-service-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - patient-service-data:/var/lib/postgresql/data
+    ports:
+      - "5000:5432"
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin_user -d db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Patient Service
+  patient-service:
+    build:
+      context: ./patient-service
+      dockerfile: Dockerfile
+    container_name: patient-service
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      patient-db-service:
+        condition: service_healthy
+#      billing-service:
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-db-service:5432/db
+      SPRING_DATASOURCE_USERNAME: admin_user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+      SERVER_PORT: 4000
+      BILLING_SERVICE_ADDRESS: billing-service  # Corrected
+      BILLING_SERVICE_GRPC_PORT: 9001
+    networks:
+      - internal
+
+volumes:
+  patient-service-data:
+
+networks:
+  internal:
+    driver: bridge
