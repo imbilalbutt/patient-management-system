@@ -5,6 +5,7 @@ import com.imbilalbutt.patientservice.dto.PatientResponseDTO;
 import com.imbilalbutt.patientservice.exceptions.EmailAlreadyExistsExceptions;
 import com.imbilalbutt.patientservice.exceptions.PatientNotFoundException;
 import com.imbilalbutt.patientservice.grpc.BillingServiceGrpcClient;
+import com.imbilalbutt.patientservice.kafka.KafkaProducer;
 import com.imbilalbutt.patientservice.mapper.PatientMapper;
 import com.imbilalbutt.patientservice.model.Patient;
 import com.imbilalbutt.patientservice.repository.PatientRepository;
@@ -26,9 +27,14 @@ public class PatientService {
     //    use dependecny injection to inject billing service client
     private final BillingServiceGrpcClient billingServiceGrpcClient;
 
-    public PatientService(PatientRepository patientRepository,  BillingServiceGrpcClient billingServiceGrpcClient) {
+    private final KafkaProducer kafkaProducer;
+
+    public PatientService(PatientRepository patientRepository,
+                          BillingServiceGrpcClient billingServiceGrpcClient,
+                          KafkaProducer kafkaProducer) {
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
 
@@ -60,6 +66,8 @@ public class PatientService {
 //        back that has a account id
         billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
                 newPatient.getName(), newPatient.getEmail());
+
+        kafkaProducer.sendEvent(newPatient);
 
         return PatientMapper.toDTO(newPatient);
     }

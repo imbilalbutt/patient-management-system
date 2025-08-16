@@ -1,6 +1,10 @@
 // version of proto
 syntax = "proto3";
 
+
+// This file is in format of protobuf, that describes our requests and response for billing service when we
+// did the GRPC
+
 // let split service,  request, response, files
 option java_multiple_files = true;
 
