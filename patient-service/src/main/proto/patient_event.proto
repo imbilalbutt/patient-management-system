@@ -1,0 +1,22 @@
+// version of proto
+syntax = "proto3";
+
+
+// In this file we are going to describe all the properties that are going to be sent in any given patient event
+// to the topic from our kafka producer
+
+package patient.events;
+
+// this tell maven to generate seperate files
+// let split service,  request, response, files
+option java_multiple_files = true;
+
+// Define message itself now
+// We are defining all the properties that are going into any given patient event that gets sent from our producer
+//
+message PatientEvent {
+  string patientId = 1;
+  string name = 2;
+  string email = 3;
+  string event_type = 4;
+}
