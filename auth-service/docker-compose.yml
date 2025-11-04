@@ -3,7 +3,7 @@
 services:
   auth-db-service:
     image: postgres:9.3
-    container_name: auth-db-service
+    container_name: db
     restart: always
 
     #    Environment variables
@@ -43,7 +43,10 @@ services:
       #      db ---> is actually container name
       #      db ==> container _ name
       #      db ==> service _ name (++++) service will be used in jdbc url making.
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
+
+#      each service can reach others by their service name
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db-service:5432/db
       SPRING_DATASOURCE_USERNAME: admin_user
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update

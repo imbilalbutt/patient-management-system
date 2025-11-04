@@ -37,5 +37,7 @@ public class AuthService {
                 .filter(u -> passwordEncoder.matches(loginRequestDTO.getPassword(), u.getPassword()))
 
                 .map(u -> jwtUtil.generateToken(u.getEmail(), u.getRole()));
+
+        return token;
     }
 }
