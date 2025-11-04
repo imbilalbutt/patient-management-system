@@ -6,26 +6,30 @@ spring:
     gateway:
 #      Under routes option we will specify all the rules that specify how to route to our patient-service microservice
       routes:
-        - id: patient-service-route
+        - id: patient-service
 #          URI is the **internal address** if our patient-service that is running insider of our docker setup
 #          http://<docker_Name> : <port>
           uri: http://patient-service:4000
-#         predicates: determines what requests to sent to our patient-service
+#         predicates: determines what requests to sent to our "patient" service
+#          we specify in predicates that this is the path that the API gateway is going to check in order to apply this rule
           predicates:
-            - path=/api/patients/**
+            - Path=/api/patients/**
 #         filters is a way for us to rewrite predicates before it forwards the requests to actual patient-service URI
           filters:
-#            strip out all text after first slash of predicate and assign it to URI i.e., remove /api
-#            REST client http://localhost:4000/api/patients
+#            strip out all text after first slash of predicate and then assign rest to URI i.e., remove /api
+#            REST client http://localhost:4004/api/patients
 #            API Gateway http://patient-service:4000/patients
 #            Patient service (spring boot app) --> /patients -> Patients array
-            - strip-prefix=1
+            - StripPrefix=1
+## From REST client http://localhost:4004/api/patients it matches /api/patients to predicate path, when it matches it
+## it applies filter (strip, rewrite URI etc.) and forward the request to URI.
+##
 
         - id: api-docs-patient-route
           uri: http://patient-service:4000
           predicates:
-            - path=/api-docs/patients
+            - Path=/api-docs/patients
           filters:
-            - rewrite-path=/api-docs/patients,/v3/api-docs
-##        REST client -> http://localhost:4000/api-docs/patients
+            - RewritePath=/api-docs/patients,/v3/api-docs
+##        REST client -> http://localhost:4004/api-docs/patients
 ##        API Gateway -> http://patient-service:4000/v3/api-docs (Rewrite)

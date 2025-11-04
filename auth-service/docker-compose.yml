@@ -1,0 +1,66 @@
+
+
+services:
+  auth-db-service:
+    image: postgres:9.3
+    container_name: auth-db-service
+    restart: always
+
+    #    Environment variables
+    environment:
+      POSTGRES_DB: db # name of database created by Docker in container
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - auth-service-data:/var/lib/postgresql/data
+
+    ports:
+      #      - host port (my laptop) : container port
+      - "5001:5432"
+
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth-service-app:
+    #    image:  # Use pre-built image, comment out build command if you want to use this line
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    restart: always
+    ports:
+      - "4005:4005" # host:docker_container -> map docker_container port to localhost port
+
+    depends_on:
+      auth-db-service:
+        condition: service_healthy
+    environment:
+      #      db ---> is actually container name
+      #      db ==> container _ name
+      #      db ==> service _ name (++++) service will be used in jdbc url making.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
+      SPRING_DATASOURCE_USERNAME: admin_user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+      SERVER_PORT: 4005 # Must match EXPOSE (in dockerfile) and application.properties
+      JWT_SECRET: AbIa56
+
+    networks:
+      - internal
+
+volumes:
+
+  auth-service-data:
+
+networks:
+  internal:
+    #    driver: bridge
+    #     external: true tells Docker: "Don’t create this network — use an existing one named shared-internal."
+    external: true
+    name: shared-internal
