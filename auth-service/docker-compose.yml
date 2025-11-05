@@ -35,7 +35,7 @@ services:
     restart: always
     ports:
       - "4005:4005" # host:docker_container -> map docker_container port to localhost port
-
+#   TODO: Remove both port binding when integrating API gateway such that client cannot access it directly.
     depends_on:
       auth-db-service:
         condition: service_healthy
