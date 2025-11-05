@@ -3,7 +3,7 @@
 services:
   auth-db-service:
     image: postgres:9.3
-    container_name: db
+    container_name: auth-db-service
     restart: always
 
     #    Environment variables
@@ -31,7 +31,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
+    container_name: auth-service-app
     restart: always
     ports:
       - "4005:4005" # host:docker_container -> map docker_container port to localhost port
