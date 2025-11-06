@@ -26,7 +26,7 @@ spring:
 #        API Gateway will apply filter and then forward the request onto uri
 #        http://auth-service:4005/login
 
-        - id: patient-service
+        - id: patient-service-route
 #          URI is the **internal address** if our patient-service that is running insider of our docker setup
 #          http://<docker_Name> : <port>
           uri: http://patient-service:4000
@@ -43,7 +43,8 @@ spring:
             - StripPrefix=1
 ## From REST client http://localhost:4004/api/patients it matches /api/patients to predicate path, when it matches it
 ## it applies filter (strip, rewrite URI etc.) and forward the request to URI.
-##
+
+            - JwtValidation
 
         - id: api-docs-patient-route
           uri: http://patient-service:4000
@@ -53,3 +54,10 @@ spring:
             - RewritePath=/api-docs/patients,/v3/api-docs
 ##        REST client -> http://localhost:4004/api-docs/patients
 ##        API Gateway -> http://patient-service:4000/v3/api-docs (Rewrite)
+
+        - id: api-docs-auth-route
+          uri: http://auth-service:4005
+          predicates:
+            - Path=/api-docs/auth
+          filters:
+            - RewritePath=/api-docs/auth,/v3/api-docs
