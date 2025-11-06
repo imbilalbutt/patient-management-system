@@ -13,6 +13,8 @@ services:
       - patient-service_app
     ports:
       - "4004:4004" # host:docker_container -> map docker_container port to localhost port
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:4005
 
     networks:
       - internal
