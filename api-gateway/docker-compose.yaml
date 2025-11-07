@@ -10,7 +10,8 @@ services:
       dockerfile: Dockerfile
     container_name: api-gateway
     depends_on:
-      - patient-service_app
+      - patient-service
+      - auth-service
     ports:
       - "4004:4004" # host:docker_container -> map docker_container port to localhost port
     environment:

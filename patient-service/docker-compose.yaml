@@ -94,7 +94,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
+    container_name: patient-service
     restart: always
     ports:
       - "4000:4000" # host:docker_container -> map docker_container port to localhost port
