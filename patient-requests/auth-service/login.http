@@ -1,16 +1,4 @@
-POST http://localhost:4005/login
-Content-Type: application/json
-
-{
-   "email" : "testuser@test.com",
-  "password": "password123"
-}
-
-> {% client.global.set("token", response.body.token ) %}
-
-##################
-# API gateway
-#POST http://localhost:4004/auth/login
+#POST http://localhost:4005/login
 #Content-Type: application/json
 #
 #{
@@ -19,3 +7,15 @@ Content-Type: application/json
 #}
 #
 #> {% client.global.set("token", response.body.token ) %}
+
+##################
+# API gateway
+POST http://localhost:4004/auth/login
+Content-Type: application/json
+
+{
+  "email" : "testuser@test.com",
+  "password": "password123"
+}
+
+> {% client.global.set("token", response.body.token ) %}
