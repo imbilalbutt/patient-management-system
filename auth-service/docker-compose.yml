@@ -26,12 +26,12 @@ services:
       timeout: 5s
       retries: 5
 
-  auth-service-app:
+  auth-service:
     #    image:  # Use pre-built image, comment out build command if you want to use this line
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: auth-service-app
+    container_name: auth-service
     restart: always
     ports:
       - "4005:4005" # host:docker_container -> map docker_container port to localhost port

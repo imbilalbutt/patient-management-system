@@ -9,14 +9,16 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: api-gateway
-    depends_on:
-      - patient-service
-      - auth-service
     ports:
       - "4004:4004" # host:docker_container -> map docker_container port to localhost port
     environment:
+#      AUTH_SERVICE_URL: http://auth-service-app:4005
       AUTH_SERVICE_URL: http://auth-service:4005
-
+      PATIENT_SERVICE_URL: http://patient-service:4000
+#    Docker Compose’s depends_on expects the service names from your other Compose file, not container names.
+#    depends_on:
+#      - patient-service
+#      - auth-service-app
     networks:
       - internal
 

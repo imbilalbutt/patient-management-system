@@ -39,4 +39,26 @@ public class AuthIntegrationTest {
 
         System.out.println("Generated token : " + response.jsonPath().getString("token"));
     }
+
+    @Test
+    public void shouldReturnUnauthorizedOnInvalidLogin() {
+//        1. Arrange: it means you do any setup this test needs to work 100 percent of the time i.e., setting up data
+//        2. Act: this is the code we write that actually triggers the thing that we are testing i.e., calling login endpoint
+//        3. Assert: we assert the result on stage 2
+
+        String loginPayload = """
+                    {
+                        "email":"invalid_user@test.com",
+                        "password":"wrongpassword"
+                    }
+                """;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(loginPayload)
+                .when()
+                .post("/auth/login")
+                .then()
+                .statusCode(401);
+    }
 }
