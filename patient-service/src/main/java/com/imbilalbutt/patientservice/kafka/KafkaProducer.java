@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+// patient.events are coming from target/generated-sources/protobuf/java/patient.events
 import patient.events.PatientEvent;
 
 @Service

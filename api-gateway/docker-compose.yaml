@@ -1,0 +1,31 @@
+
+
+services:
+
+#  api-gateway:
+  app:
+    #    image:  # Use pre-built image, comment out build command if you want to use this line
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+      - patient-service_app
+    ports:
+      - "4004:4004" # host:docker_container -> map docker_container port to localhost port
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:4005
+
+    networks:
+      - internal
+
+networks:
+  internal:
+#    driver: bridge
+#     external: true tells Docker: "Don’t create this network — use an existing one named shared-internal."
+    external: true
+    name: shared-internal
+
+
+
+

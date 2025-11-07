@@ -2,8 +2,8 @@
 
 # Step 1: Build code
 # FROM maven:3.9.8-eclipse-temurin-21 AS builder
-FROM maven:3.8.4-openjdk-17 AS builder
-
+#FROM maven:3.8.4-openjdk-17 AS builder
+FROM maven:3.8.4-eclipse-temurin-17 as builder
 WORKDIR /app
 
 
@@ -22,7 +22,10 @@ RUN mvn clean package
 
 # Step 2: Run code
 
-FROM openjdk:21-jdk AS runner
+#FROM openjdk:21-jdk AS runner
+#FROM eclipse-temurin:17-jdk AS runner
+#FROM openjdk:17-jdk-alpine AS runner
+FROM eclipse-temurin:17-jdk-alpine AS runner
 
 WORKDIR /app
 
@@ -37,7 +40,6 @@ EXPOSE 4001
 EXPOSE 9001
 
 ENTRYPOINT ["java" , "-jar", "app.jar"]
-
 
 
 

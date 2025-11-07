@@ -1,0 +1,63 @@
+server:
+  port: 4004
+
+spring:
+  cloud:
+    gateway:
+#      Under routes option we will specify all the rules that specify how to route to our patient-service microservice
+      routes:
+        - id: auth-service-route
+#          Internal address of our auth service when it is running in "Docker"
+#          So this is the end point or micro-service that these set of rules are going to route to
+#          if request sasifties the predicate
+#          Docker will resolve the name "auth-service" by matching it to the name of container
+          uri: http://auth-service:4005
+
+#          Predicate means whenever we receive any request to our API gateway that has path of /auth/whatever
+#          Then, this request will be forwarded to uri (http://auth-service:4005)
+          predicates:
+            - Path=/auth/**
+          filters:
+#           Remove everything after the first slash i.e., /auth
+#           and attach rest /** to uri (http://auth-service:4005)
+            - StripPrefix=1
+#        For example:
+#        Front-end clients or Rest controllers: http://localhost:4004/auth/login
+#        API Gateway will apply filter and then forward the request onto uri
+#        http://auth-service:4005/login
+
+        - id: patient-service-route
+#          URI is the **internal address** if our patient-service that is running insider of our docker setup
+#          http://<docker_Name> : <port>
+          uri: http://patient-service:4000
+#         predicates: determines what requests to sent to our "patient" service
+#          we specify in predicates that this is the path that the API gateway is going to check in order to apply this rule
+          predicates:
+            - Path=/api/patients/**
+#         filters is a way for us to rewrite predicates before it forwards the requests to actual patient-service URI
+          filters:
+#            strip out all text after first slash of predicate and then assign rest to URI i.e., remove /api
+#            REST client http://localhost:4004/api/patients
+#            API Gateway http://patient-service:4000/patients
+#            Patient service (spring boot app) --> /patients -> Patients array
+            - StripPrefix=1
+## From REST client http://localhost:4004/api/patients it matches /api/patients to predicate path, when it matches it
+## it applies filter (strip, rewrite URI etc.) and forward the request to URI.
+
+            - JwtValidation
+
+        - id: api-docs-patient-route
+          uri: http://patient-service:4000
+          predicates:
+            - Path=/api-docs/patients
+          filters:
+            - RewritePath=/api-docs/patients,/v3/api-docs
+##        REST client -> http://localhost:4004/api-docs/patients
+##        API Gateway -> http://patient-service:4000/v3/api-docs (Rewrite)
+
+        - id: api-docs-auth-route
+          uri: http://auth-service:4005
+          predicates:
+            - Path=/api-docs/auth
+          filters:
+            - RewritePath=/api-docs/auth,/v3/api-docs

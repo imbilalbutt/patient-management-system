@@ -4,7 +4,7 @@
 # FROM maven:3.9.8-eclipse-temurin-21 AS builder
 #FROM maven:3.8.4-openjdk-17 AS builder
 FROM maven:3.8.4-eclipse-temurin-17 as builder
-
+#FROM maven:3.8.4-amazoncorretto-17 AS builder
 WORKDIR /app
 
 
@@ -26,39 +26,14 @@ RUN mvn clean package
 #FROM openjdk:21-jdk AS runner
 #FROM eclipse-temurin:17-jdk AS runner
 FROM eclipse-temurin:17-jdk-alpine AS runner
+#FROM openjdk:17-jdk-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/analytics-service.jar ./app.jar
+COPY --from=builder ./app/target/auth-service.jar ./app.jar
 
-# We set 4002 in our application.properties
-EXPOSE 4002
+# We set 4000 in our application.properties
+EXPOSE 4005
 
 #ENTRYPOINT ["java" , "-jar", "app.jar"]
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
-
-
-
-
-
-
-# FROM maven:3.9.8-eclipse-temurin-21 AS build
-  #
-  #COPY src /app/src
-  #
-  #COPY pom.xml /app
-  #
-  #WORKDIR /app
-  #RUN mvn clean install -U
-  #
-  #FROM openjdk:21
-  #COPY --from=build /app/target/mal-randomizer-0.0.1-SNAPSHOT.jar /app/app.jar
-  #
-  #WORKDIR /app
-  #
-  #EXPOSE 8080
-  #
-  #CMD ["java", "-jar", "app.jar"]
-  #

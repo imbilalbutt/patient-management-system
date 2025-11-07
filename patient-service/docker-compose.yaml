@@ -2,7 +2,7 @@
 
 services:
   kafka:
-    image: bitnami/kafka:3.4.0
+    image: debezium/kafka:3.0.0.Final # apache/kafka:3.4.0
     container_name: patient-service_kafka_1
 
     environment:
@@ -60,6 +60,31 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+#  auth-service-db:
+#    image: postgres:9.3
+#    container_name: auth-db-service
+#    restart: always
+#
+#    #    Environment variables
+#    environment:
+#      POSTGRES_DB: db # name of database created by Docker in container
+#      POSTGRES_USER: admin_user
+#      POSTGRES_PASSWORD: password
+#    volumes:
+#      - auth-service-data:/var/lib/postgresql/data
+#
+#    ports:
+#      #      - host port (my laptop) : container port
+#      - "5001:5432"
+#
+#    networks:
+#      - internal
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U admin_user -d db" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
 
 
 ## This will be ("patient-service_app") will be container name
