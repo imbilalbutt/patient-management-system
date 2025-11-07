@@ -24,7 +24,8 @@ RUN mvn clean package
 # Step 2: Run code
 
 #FROM openjdk:21-jdk AS runner
-FROM eclipse-temurin:21-jdk AS runner
+#FROM eclipse-temurin:17-jdk AS runner
+FROM eclipse-temurin:17-jdk-alpine AS runner
 
 WORKDIR /app
 
@@ -33,4 +34,5 @@ COPY --from=builder ./app/target/api-gateway.jar ./app.jar
 # We set 4004 in our application.properties
 EXPOSE 4004
 
-ENTRYPOINT ["java" , "-jar", "app.jar"]
+#ENTRYPOINT ["java" , "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

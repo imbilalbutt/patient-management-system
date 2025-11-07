@@ -24,7 +24,8 @@ RUN mvn clean package
 # Step 2: Run code
 
 #FROM openjdk:21-jdk AS runner
-FROM eclipse-temurin:17-jdk AS runner
+#FROM eclipse-temurin:17-jdk AS runner
+FROM eclipse-temurin:17-jdk-alpine AS runner
 
 WORKDIR /app
 
@@ -34,7 +35,7 @@ COPY --from=builder ./app/target/analytics-service.jar ./app.jar
 EXPOSE 4002
 
 #ENTRYPOINT ["java" , "-jar", "app.jar"]
-ENTRYPOINT ["java", "-XX:ParallelGCThreads=1", "-XX:CICompilerCount=1", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
 
 

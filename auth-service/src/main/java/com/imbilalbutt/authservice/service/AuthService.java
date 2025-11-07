@@ -4,6 +4,7 @@ import com.imbilalbutt.authservice.dto.LoginRequestDTO;
 import com.imbilalbutt.authservice.model.User;
 import com.imbilalbutt.authservice.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

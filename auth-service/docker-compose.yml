@@ -52,7 +52,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: always
       SERVER_PORT: 4005 # Must match EXPOSE (in dockerfile) and application.properties
-      JWT_SECRET: AbIa56
+      JWT_SECRET: f4b18dbf82f5b81c9a96a9e8a23cc02a06c231c4e6b245f58994cb5c72a2f4ab
 
     networks:
       - internal

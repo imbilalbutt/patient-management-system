@@ -2,7 +2,7 @@
 
 services:
   kafka:
-    image: bitnami/kafka:3.4.0
+    image: debezium/kafka:3.0.0.Final # apache/kafka:3.4.0
     container_name: patient-service_kafka_1
 
     environment:
