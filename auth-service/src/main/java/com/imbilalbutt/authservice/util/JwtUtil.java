@@ -3,23 +3,19 @@ package com.imbilalbutt.authservice.util;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
+import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@ConfigurationPropertiesScan
-@EnableConfigurationProperties
-@Configuration
+//@ConfigurationPropertiesScan
+//@EnableConfigurationProperties
+//@Configuration
+@Component
 // By adding component tag to class, this tag registers a class as Java bean to autowire with dependency injection
 public class JwtUtil {
 
@@ -28,7 +24,7 @@ public class JwtUtil {
 //    We are injecting secretKey from Environment Variables
     public JwtUtil(@Value("${JWT_SECRET}") String secret) {
         byte[] keyBytes = Base64.getDecoder().decode(secret.getBytes(StandardCharsets.UTF_8));
-        this.secretKey  = Keys.hmacShaKeyFor(keyBytes);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(String email, String role) {
@@ -42,12 +38,14 @@ public class JwtUtil {
     }
 
     public void validateToken(String token) {
-        try{
+        try {
             Jwts.parser().verifyWith((SecretKey) secretKey)
                     .build()
-                    .parseClaimsJws(token);
-        } catch (JwtException e){
-            throw new JwtException("Invalid token");
+                    .parseSignedClaims(token);
+        } catch (SignatureException e) {
+            throw new JwtException("Invalid JWT signature");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid JWT");
         }
     }
 }

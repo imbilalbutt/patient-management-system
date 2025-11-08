@@ -32,19 +32,22 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
-    @Operation(summary = "Validate token")
+    @Operation(summary = "Validate Token")
     @GetMapping("/validate")
-//    Any request that get to validate end point, Spring is going to get the Authorization header from RequestHeader
+    //    Any request that get to validate end-point, Spring is going to get the Authorization header from RequestHeader
 //    and pass that header to us as variable called authHeader.
-    public ResponseEntity<Void> validateToken(@RequestHeader("Auhtorization") String authHeader){
+    public ResponseEntity<Void> validateToken(
+            @RequestHeader("Authorization") String authHeader) {
 
         // One of the header is Authorization, and standard is to first keep Bearer string and then token.
         // Authorization : Bearer <header>
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+        // Authorization: Bearer <token>
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return authService.validateToken(authHeader.substring(7)) // removes Bearer and only consider Token from string and returns True or False
+        // removes Bearer and only consider Token from string and returns True or False
+        return authService.validateToken(authHeader.substring(7))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

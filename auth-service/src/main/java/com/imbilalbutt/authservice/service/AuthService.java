@@ -35,7 +35,8 @@ public class AuthService {
                 .findByEmail(loginRequestDTO.getEmail())
 //                .filter(u -> u.getPassword().equals(loginRequestDTO.getPassword()));
 
-                //    password in request -> password -> encoded -> @#%jabsdjkjsad (this value we compare in database)
+                //  1. password in request -> password -> encoded -> @#%jabsdjkjsad (this value we compare in database)
+//                we never decode the password
                 .filter(u -> passwordEncoder.matches(loginRequestDTO.getPassword(), u.getPassword()))
 
                 .map(u -> jwtUtil.generateToken(u.getEmail(), u.getRole()));
@@ -43,11 +44,11 @@ public class AuthService {
         return token;
     }
 
-    public boolean validateToken(String token){
-        try{
+    public boolean validateToken(String token) {
+        try {
             jwtUtil.validateToken(token);
             return true;
-        } catch(JwtException e){
+        } catch (JwtException e){
             return false;
         }
     }
